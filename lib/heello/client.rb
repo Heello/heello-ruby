@@ -9,10 +9,18 @@ module Heello
     end
     
     def configure(which, &block)
-      if self[which].exists?
-        self[which].configure block
+      if [:app, :user].include? which
+        self.instance_variable_get("@#{which}").configure &block
       else
         throw ArgumentError, "Invalid configuration parameter given"
+      end
+    end
+    
+    def method_missing(method, *args, &block)
+      if @api.endpoint_exists? method.to_s
+        @api.execute_api method.to_s, args
+      else
+        super
       end
     end
   end

@@ -9,4 +9,8 @@ require 'json'
 require 'nestful'
 
 # Load library files
-Dir.glob(File.dirname(__FILE__) + "/heello/*") {|file| require file}
+require_local 'heello/configurable'
+require_local 'heello/api'
+require_local 'heello/app'
+require_local 'heello/client'
+require_local 'heello/user'
