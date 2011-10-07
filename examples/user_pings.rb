@@ -13,4 +13,5 @@ heello.configure :user, do |conf|
 	conf[:refresh_token] = "refreshtoken"
 end
 
-user = heello.users :show, {:id => 3}
+user = heello.users :show, {:id => 10}
+puts user.inspect

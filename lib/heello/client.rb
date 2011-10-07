@@ -5,7 +5,7 @@ module Heello
     def initialize
       @app = Heello::App.new
       @user = Heello::User.new
-      @api = Heello::API.new
+      @api = Heello::API.new(@app, @user)
     end
     
     def configure(which, &block)
