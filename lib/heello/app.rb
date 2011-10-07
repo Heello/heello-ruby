@@ -5,7 +5,8 @@ module Heello
     def initialize
       @config = {
         "client_id" => nil,
-        "client_secret" => nil
+        "client_secret" => nil,
+        "redirect_url" => nil
       }
     end
   end

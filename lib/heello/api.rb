@@ -42,6 +42,14 @@ module Heello
       JSON.parse(resp)
     end
     
+    def get_url_base
+      url = "http" + (API_SECURE ? "s" : "") + "://"
+      url += API_BASE + "/"
+      url += API_VERSION.to_s + "/"
+      
+      url
+    end
+    
     protected
     
     def build_api(api_def)
@@ -64,14 +72,6 @@ module Heello
     
     def endpoint_options
       @api[@endpoint][@action]
-    end
-    
-    def get_url_base
-      url = "http" + (API_SECURE ? "s" : "") + "://"
-      url += API_BASE + "/"
-      url += API_VERSION.to_s + "/"
-      
-      url
     end
     
     def get_url
