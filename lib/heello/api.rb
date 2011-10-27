@@ -4,10 +4,11 @@ module Heello
   API_VERSION = 1
   
   class API
-    def initialize(app, user)
+    def initialize(app, user, state)
       @api = {}
       @app = app
       @user = user
+      @state = state
       
       @endpoint = nil
       @action = nil
@@ -31,6 +32,7 @@ module Heello
       @params = args[1]
       
       self.validate_args()
+      self.check_for_authentication()
       
       if self.endpoint_options['method'] == "GET"
         resp = Nestful.get(self.get_url, :params => @params)
@@ -46,8 +48,6 @@ module Heello
       url = "http" + (API_SECURE ? "s" : "") + "://"
       url += API_BASE + "/"
       url += API_VERSION.to_s + "/"
-      
-      url
     end
     
     protected
@@ -66,8 +66,15 @@ module Heello
       return if not self.endpoint_options.has_key? "required_params"
       
       self.endpoint_options['required_params'].each do |param|
-        raise "Missing required parameter '#{param}' for #{@endpoint}/#{@action}" if !@params.has_key?(param)
+        raise "Missing required parameter '#{param}' for #{@endpoint}/#{@action}" if !@params.has_key?(param.to_sym)
       end
+    end
+    
+    def check_for_authentication()
+      return if not self.endpoint_options.has_key? "requires_auth" or self.endpoint_options["requires_auth"] == false      
+      raise "Attempting to call write-enabled endpoint without user credentials" if not @user.configured?
+      
+      @params[:access_token] = @user.access_token
     end
     
     def endpoint_options

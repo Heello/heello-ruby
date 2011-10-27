@@ -5,11 +5,12 @@ module Heello
     def initialize
       @app = Heello::App.new
       @user = Heello::User.new
-      @api = Heello::API.new(@app, @user)
+      @state = Heello::State.new
+      @api = Heello::API.new(@app, @user, @state)
     end
     
     def configure(which, &block)
-      if [:app, :user].include? which
+      if [:app, :user, :state].include? which
         self.instance_variable_get("@#{which}").configure &block
       else
         throw ArgumentError, "Invalid configuration parameter given"
@@ -17,7 +18,7 @@ module Heello
     end
     
     def authorization_url(display = "full")
-      raise "Client credentials required to build authorization URL" if @app.mode == :nocreds
+      raise "Client credentials required to build authorization URL" if self.mode == :nocreds
       
       url = @api.get_url_base
       url += "oauth/authorize?"
@@ -26,11 +27,11 @@ module Heello
         :client_id => @app.client_id,
         :response_type => "code",
         :redirect_uri => @app.redirect_url,
-        :state => @app.state,
+        :state => @state,
         :display => display
       }
       
-      
+      url += params.to_query
     end
     
     def method_missing(method, *args, &block)
