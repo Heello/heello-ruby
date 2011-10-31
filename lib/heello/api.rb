@@ -1,5 +1,5 @@
 module Heello
-  API_SECURE = false
+  API_SECURE = true
   API_BASE = 'api.heello.com'
   API_VERSION = 1
   

@@ -34,6 +34,28 @@ module Heello
       url += params.to_query
     end
     
+    def finish_authorization(args)
+      raise "Problem finishing Heello API authentication: #{args.error}" if args.has_key? "error"
+      raise "Invalid state: given #{args[:state]} expecting #{@state.value}" if args[:state] != @state.value
+      
+      params = {
+        :client_id => @app.client_id,
+        :client_secret => @app.client_secret,
+        :redirect_uri => @app.redirect_url,
+        :code => args[:code],
+        :response_type => 'token',
+        :grant_type => 'authorization_code'
+      }
+      
+      endpoint = @api.get_url_base + "/oauth/token"
+      resp = Nestful.post(endpoint, :params => params)
+      
+      self.configure :user, do |conf|
+        conf[:access_token] = resp[:access_token]
+        conf[:refresh_token] = resp[:refresh_token]
+      end
+    end
+    
     def method_missing(method, *args, &block)
       if @api.endpoint_exists? method.to_s
         @api.execute_api method.to_s, args
